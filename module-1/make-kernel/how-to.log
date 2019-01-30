@@ -1,0 +1,8 @@
+список установленных доп пакетов: epel-release bash-completion bash-completion-extras openssh-server w3m bc elfutils-libelf-devel rpm-build
+
+сборка ядра
+sudo cp -v /boot/config-3.10.0-957.1.3.el7.x86_64 .config
+yes “” | make oldconfig
+make rpm-pkg
+
+установка ядра: sudo rpm -iv ~/rpmbuild/RPMS/x86_64/kernel-4.4.172-1.x86_64.rpm
