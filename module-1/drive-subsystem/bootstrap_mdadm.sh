@@ -3,7 +3,8 @@
 #build raid 10
 
 build_raid() {
-  yes "" | mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sd{b,c,d,e}
+  bash -c "mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sd{b,c,d,e}"
+  bash -c "sleep 5"
 }
 
 break_raid() {
