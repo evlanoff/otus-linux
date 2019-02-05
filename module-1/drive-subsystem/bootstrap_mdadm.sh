@@ -27,7 +27,7 @@ save_raid_conf() {
 }
 
 make_gpt() {
-  parted -s /dev/md0 mklabel gpt
+  bash -c "parted -s /dev/md0 mklabel gpt"
 }
 
 make_partitions() {
