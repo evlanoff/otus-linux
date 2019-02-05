@@ -3,7 +3,7 @@
 #build raid 10
 
 build_raid() {
-  bash -c "mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sd{b,c,d,e}"
+  bash -c "mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sd[b-e]"
   bash -c "sleep 5"
 }
 
