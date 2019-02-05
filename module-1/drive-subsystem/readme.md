@@ -1,12 +1,40 @@
-Перенос рэйда
+*Перенос рэйда*
 
-Создаём 2 виртуальные машины. Имена для примера ВМ1 и ВМ2. На машине 1 создаём помимо основного диска под ОС 2 дополнительных диска для RAID-1. На ВМ1 собираем массив, генерируем mdadm.conf
+Создаём 2 виртуальные машины. Через vboxmanage создаём 2 диска вне директорий с Vagrantfile. Файлы VM1.vagrantfile и VM2.vagrantfile с описанием двух разных машин. VM1 имеет 192.168.11.101, VM2 192.168.11.102.
 
+На VM1.vagrantfile собираем массив, генерируем mdadm.conf
+
+```console
 echo \"DEVICE partitions\" > /etc/mdadm/mdadm.conf"
 mdadm --detail --scan | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
+```
 
-В настройках ВМ2 добавляем 2 диска, которые добавляли ВМ1. Грузимся в систему, через lsblk проверяем, что диски имеются.
-Через scp копируем mdadm.conf с ВМ1 на ВМ2. На ВМ2 ставим mdadm. Выполняем mdadm --assemble --scan.
-Смотрим watch cat /proc/mdstat и lsblk. Ребутаем ВМ2 и проверяем, что массив собирается при запуске.
+В VM2.vagrantfile добавляем 2 диска. Грузимся в систему, через lsblk проверяем, что диски имеются.
+Через scp копируем mdadm.conf с VM1 на VM2. На VM2 ставим mdadm. Выполняем
 
-Через box.vm.provision "shell", path: "bootstrap_mdadm.sh" добавить опции для монтирования дисков и автоматизации сборки рэйда.
+```console
+mdadm --assemble --scan.
+```
+
+Смотрим
+
+```console
+watch cat /proc/mdstat и lsblk
+```
+
+Ребутаем VM2 и проверяем, что массив на месте.
+
+Через vagrant provision как-то так...
+
+```console
+ box.vm.provision "shell", inline: <<-SHELL
+              mkdir -p ~root/.ssh
+              cp ~vagrant/.ssh/auth* ~root/.ssh
+              yum install mdadm scp
+              mkdir -p /etc/mdadm
+              scp root@<ip>:/etc/mdadm/mdadm.conf /etc/mdadm/mdadm.conf
+              mdadm --assemble --scan
+          SHELL
+```
+
+Как вариант через box.vm.provision "shell", path: "bootstrap_attach_raid.sh" добавить опции для монтирования дисков и автоматизации сборки рэйда.
