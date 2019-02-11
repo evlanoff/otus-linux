@@ -2,9 +2,9 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-  :otuslinux => {
+  :otuslinux_1 => {
         :box_name => "centos/7",
-        :ip_addr => '192.168.11.101',
+        :ip_addr => '192.168.11.102',
 	:disks => {
 		:sata1 => {
 			:dfile => './sata1.vdi',
@@ -57,7 +57,10 @@ Vagrant.configure("2") do |config|
  	  box.vm.provision "shell", inline: <<-SHELL
 	      mkdir -p ~root/.ssh
               cp ~vagrant/.ssh/auth* ~root/.ssh
-              yum install scp
+              yum install mdadm scp
+              mkdir -p /etc/mdadm
+              scp root@192.168.11.102:/etc/mdadm/mdadm.conf /etc/mdadm/
+              mdadm --assemble --scan
   	  SHELL
 
       end
