@@ -169,14 +169,16 @@ zfs list -t snapshot
 mount -t zfs otus-test@today /mnt
 ```
 
-** Перенос /opt на zfs **
+**Перенос /opt на zfs**
 
 Переносим с /opt в /mnt
 
 Например, cp -aR /opt /mnt
 
 Создаём zfs пул opt с точкой монтирования /opt либо для имеющейся, но ненужной точки устанавливаем значение точки монтирования.
+
 ```console
 zfs set mountpoint=/opt otus-test
 ```
+
 Переносим всё с /mnt на /opt и перезагружаемся. Проверяем, что в /opt всё лежит.
