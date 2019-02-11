@@ -98,7 +98,7 @@ lvconvert --merge /dev/VolGroup00/home_snap
 mount /home
 ```
 
-**Задание со звездой **
+**Задание со звездой**
 
 Добавляем репозиторий
 
