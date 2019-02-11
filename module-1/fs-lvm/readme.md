@@ -102,21 +102,29 @@ mount /home
 
 Добавляем репозиторий
 
+```console
 yum install http://download.zfsonlinux.org/epel/zfs-release.el7_5.noarch.rpm
+```
 
 Настраиваем модуль ZFS таким образом, чтобы последующие обновления ядра linux не вынуждали заниматься перекомпеляцией модуля zfs.
 
+```console
 vi /etc/yum.repos.d/zfs.repo
+
 [zfs]
 enabled=0
 
 [zfs-kmod]
 enabled=1
+```
 
 Устаналиваем ядро
+
+```console
 yum install zfs
 
 reboot
+```
 
 Првоеряем и подключаем модуль
 ```console
