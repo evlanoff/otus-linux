@@ -1,0 +1,648 @@
+Script started on Mon 11 Feb 2019 11:27:57 AM UTC
+]0;root@lvm:~[?1034h[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
+  Logical volume "LogVol00" successfully removed
+]0;root@lvm:~[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.
+  Logical volume "LogVol00" created.
+]0;root@lvm:~[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2097152, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+]0;root@lvm:~[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt
+]0;root@lvm:~[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of lvm:/
+xfsdump: dump date: Mon Feb 11 11:28:38 2019
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 728822592 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: lvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/vg_root-lv_root
+xfsrestore: session time: Mon Feb 11 11:28:38 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2700 directories and 23608 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 705431944 bytes
+xfsdump: dump size (non-dir files) : 692279248 bytes
+xfsdump: dump complete: 18 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 18 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+]0;root@lvm:~[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+]0;root@lvm:~[root@lvm ~]# chroot /mnt/
+]0;root@lvm:/[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+]0;root@lvm:/[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+]0;root@lvm:/boot[root@lvm boot]# exit
+exit
+]0;root@lvm:~[root@lvm ~]# less[K[K[K[Kvi resize_root.log 
+[?1049h[?1h=[1;63r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[63;1H"resize_root.log" [noeol] 74L, 4096C[1;1HScript started on Mon 11 Feb 2019 11:27:57 AM UTC
+[34m^[[m]0;root@lvm:~[34m^G^[[m[?1034h[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00[34m^M[m
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y[34m^M[m
+  Logical volume "LogVol00" successfully removed[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00[34m^M[m
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y[34m^M[m
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.[34m^M[m
+  Logical volume "LogVol00" created.[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00[34m^M[m
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks[34m^M[m[11;10H=[23Csectsz=512   attr=2, projid32bit=1[34m^M[m[12;10H=[23Ccrc=1[8Cfinobt=0, sparse=0[34m^M[m
+data     =[23Cbsize=4096   blocks=2097152, imaxpct=25[34m^M[m[14;10H=[23Csunit=0      swidth=0 blks[34m^M[m
+naming   =version 2[14Cbsize=4096   ascii-ci=0 ftype=1[34m^M[m
+log      =internal log[11Cbsize=4096   blocks=2560, version=2[34m^M[m[17;10H=[23Csectsz=512   sunit=0 blks, lazy-count=1[34m^M[m
+realtime =none[19Cextsz=4096   blocks=0, rtextents=0[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[34m^M[m
+xfsrestore: using file dump (drive_simple) strategy[34m^M[m
+xfsrestore: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: using file dump (drive_simple) strategy[34m^M[m
+xfsdump: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: level 0 dump of lvm:/[34m^M[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsdump: session label: ""[34m^M[m
+xfsrestore: searching media for dump[34m^M[m
+xfsdump: ino map phase 1: constructing initial dump list[34m^M[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[34m^M[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[34m^M[m
+xfsdump: ino map construction complete[34m^M[m
+xfsdump: estimated dump size: 728822592 bytes[34m^M[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[34m^M[m
+xfsdump: dumping ino map[34m^M[m
+xfsdump: dumping directories[34m^M[m
+xfsrestore: examining media file 0[34m^M[m
+xfsrestore: dump description: [34m^M[m
+xfsrestore: hostname: lvm[34m^M[m
+xfsrestore: mount point: /[34m^M[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[34m^M[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsrestore: level: 0[34m^M[m
+xfsrestore: session label: ""[34m^M[m
+xfsrestore: media label: ""[34m^M[m
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[34m^M[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[34m^M[m
+xfsrestore: searching media for directory dump[34m^M[m
+xfsrestore: reading directories[34m^M[m
+xfsdump: dumping non-directory files[34m^M[m
+xfsrestore: 2700 directories and 23608 entries processed[34m^M[m
+xfsrestore: directory post-processing[34m^M[m
+xfsrestore: restoring non-directory files[34m^M[m
+xfsdump: ending media file[34m^M[m
+xfsdump: media file size 705431944 bytes[34m^M[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[34m^M[m
+xfsdump: dump complete: 18 seconds elapsed[34m^M[m
+xfsdump: Dump Status: SUCCESS[34m^M[m
+xfsrestore: restore complete: 18 seconds elapsed[34m^M[m
+xfsrestore: Restore Status: SUCCESS[34m^M[1;1H[?12l[?25h[?25l[27m[m[H[2J[1;1Hxfsrestore: restore complete: 18 seconds elapsed[34m^M[m
+xfsrestore: Restore Status: SUCCESS[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# chroot /mnt/[34m^M
+^[[m]0;root@lvm:/[34m^G^[[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[34m^M[m
+Generating grub configuration file ...[34m^M[m
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[34m^M[m
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[34m^M[m
+done[34m^M
+^[[m]0;root@lvm:/[34m^G[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[34m^M[m
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[34m^M[m
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found![34m^M[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![34m^M[m
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be
+[1m[34m~                                                                                                                                                                                                                                            [16;1H~                                                                                                                                                                                                                                            [17;1H~                                                                                                                                                                                                                                            [18;1H~                                                                                                                                                                                                                                            [19;1H~                                                                                                                                                                                                                                            [20;1H~                                                                                                                                                                                                                                            [21;1H~                                                                                                                                                                                                                                            [22;1H~                                                                                                                                                                                                                                            [23;1H~                                                                                                                                                                                                                                            [24;1H~                                                                                                                                                                                                                                            [25;1H~                                                                                                                                                                                                                                            [26;1H~                                                                                                                                                                                                                                            [27;1H~                                                                                                                                                                                                                                            [28;1H~                                                                                                                                                                                                                                            [29;1H~                                                                                                                                                                                                                                            [30;1H~                                                                                                                                                                                                                                            [31;1H~                                                                                                                                                                                                                                            [32;1H~                                                                                                                                                                                                                                            [33;1H~                                                                                                                                                                                                                                            [34;1H~                                                                                                                                                                                                                                            [35;1H~                                                                                                                                                                                                                                            [36;1H~                                                                                                                                                                                                                                            [37;1H~                                                                                                                                                                                                                                            [38;1H~                                                                                                                                                                                                                                            [39;1H~                                                                                                                                                                                                                                            [40;1H~                                                                                                                                                                                                                                            [41;1H~                                                                                                                                                                                                                                            [42;1H~                                                                                                                                                                                                                                            [43;1H~                                                                                                                                                                                                                                            [44;1H~                                                                                                                                                                                                                                            [45;1H~                                                                                                                                                                                                                                            [46;1H~                                                                                                                                                                                                                                            [47;1H~                                                                                                                                                                                                                                            [48;1H~                                                                                                                                                                                                                                            [49;1H~                                                                                                                                                                                                                                            [50;1H~                                                                                                                                                                                                                                            [51;1H~                                                                                                                                                                                                                                            [52;1H~                                                                                                                                                                                                                                            [53;1H~                                                                                                                                                                                                                                            [54;1H~                                                                                                                                                                                                                                            [55;1H~                                                                                                                                                                                                                                            [56;1H~                                                                                                                                                                                                                                            [57;1H~                                                                                                                                                                                                                                            [58;1H~                                                                                                                                                                                                                                            [59;1H~                                                                                                                                                                                                                                            [60;1H~                                                                                                                                                                                                                                            [61;1H~                                                                                                                                                                                                                                            [62;1H~                                                                                                                                                                                                                                            [1;1H[?12l[?25h[?25l[1;62r[m[1;1H[13M[1;63r[50;1H[1m[34m~                                                                                                                                                                                                                                            [51;1H~                                                                                                                                                                                                                                            [52;1H~                                                                                                                                                                                                                                            [53;1H~                                                                                                                                                                                                                                            [54;1H~                                                                                                                                                                                                                                            [55;1H~                                                                                                                                                                                                                                            [56;1H~                                                                                                                                                                                                                                            [57;1H~                                                                                                                                                                                                                                            [58;1H~                                                                                                                                                                                                                                            [59;1H~                                                                                                                                                                                                                                            [60;1H~                                                                                                                                                                                                                                            [61;1H~                                                                                                                                                                                                                                            [62;1H~                                                                                                                                                                                                                                            [1;1H[?12l[?25h[?25l[27m[m[H[2J[1;10H=[23Ccrc=1[8Cfinobt=0, sparse=0[34m^M[m
+data     =[23Cbsize=4096   blocks=2097152, imaxpct=25[34m^M[m[3;10H=[23Csunit=0      swidth=0 blks[34m^M[m
+naming   =version 2[14Cbsize=4096   ascii-ci=0 ftype=1[34m^M[m
+log      =internal log[11Cbsize=4096   blocks=2560, version=2[34m^M[m[6;10H=[23Csectsz=512   sunit=0 blks, lazy-count=1[34m^M[m
+realtime =none[19Cextsz=4096   blocks=0, rtextents=0[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[34m^M[m
+xfsrestore: using file dump (drive_simple) strategy[34m^M[m
+xfsrestore: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: using file dump (drive_simple) strategy[34m^M[m
+xfsdump: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: level 0 dump of lvm:/[34m^M[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsdump: session label: ""[34m^M[m
+xfsrestore: searching media for dump[34m^M[m
+xfsdump: ino map phase 1: constructing initial dump list[34m^M[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[34m^M[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[34m^M[m
+xfsdump: ino map construction complete[34m^M[m
+xfsdump: estimated dump size: 728822592 bytes[34m^M[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[34m^M[m
+xfsdump: dumping ino map[34m^M[m
+xfsdump: dumping directories[34m^M[m
+xfsrestore: examining media file 0[34m^M[m
+xfsrestore: dump description: [34m^M[m
+xfsrestore: hostname: lvm[34m^M[m
+xfsrestore: mount point: /[34m^M[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[34m^M[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsrestore: level: 0[34m^M[m
+xfsrestore: session label: ""[34m^M[m
+xfsrestore: media label: ""[34m^M[m
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[34m^M[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[34m^M[m
+xfsrestore: searching media for directory dump[34m^M[m
+xfsrestore: reading directories[34m^M[m
+xfsdump: dumping non-directory files[34m^M[m
+xfsrestore: 2700 directories and 23608 entries processed[34m^M[m
+xfsrestore: directory post-processing[34m^M[m
+xfsrestore: restoring non-directory files[34m^M[m
+xfsdump: ending media file[34m^M[m
+xfsdump: media file size 705431944 bytes[34m^M[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[34m^M[m
+xfsdump: dump complete: 18 seconds elapsed[34m^M[m
+xfsdump: Dump Status: SUCCESS[34m^M[m
+xfsrestore: restore complete: 18 seconds elapsed[34m^M[m
+xfsrestore: Restore Status: SUCCESS[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# chroot /mnt/[34m^M
+^[[m]0;root@lvm:/[34m^G^[[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[34m^M[m
+Generating grub configuration file ...[34m^M[m
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[34m^M[m
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[34m^M[m
+done[34m^M
+^[[m]0;root@lvm:/[34m^G[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[34m^M[m
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[34m^M[m
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found![34m^M[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![34m^M[?12l[?25h[?25l[27m[m[H[2J[1;1Hdracut module 'busybox' will not be installed, because command 'busybox' could not be found![34m^M[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![34m^M[m
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be
+[1m[34m~                                                                                                                                                                                                                                            [5;1H~                                                                                                                                                                                                                                            [6;1H~                                                                                                                                                                                                                                            [7;1H~                                                                                                                                                                                                                                            [8;1H~                                                                                                                                                                                                                                            [9;1H~                                                                                                                                                                                                                                            [10;1H~                                                                                                                                                                                                                                            [11;1H~                                                                                                                                                                                                                                            [12;1H~                                                                                                                                                                                                                                            [13;1H~                                                                                                                                                                                                                                            [14;1H~                                                                                                                                                                                                                                            [15;1H~                                                                                                                                                                                                                                            [16;1H~                                                                                                                                                                                                                                            [17;1H~                                                                                                                                                                                                                                            [18;1H~                                                                                                                                                                                                                                            [19;1H~                                                                                                                                                                                                                                            [20;1H~                                                                                                                                                                                                                                            [21;1H~                                                                                                                                                                                                                                            [22;1H~                                                                                                                                                                                                                                            [23;1H~                                                                                                                                                                                                                                            [24;1H~                                                                                                                                                                                                                                            [25;1H~                                                                                                                                                                                                                                            [26;1H~                                                                                                                                                                                                                                            [27;1H~                                                                                                                                                                                                                                            [28;1H~                                                                                                                                                                                                                                            [29;1H~                                                                                                                                                                                                                                            [30;1H~                                                                                                                                                                                                                                            [31;1H~                                                                                                                                                                                                                                            [32;1H~                                                                                                                                                                                                                                            [33;1H~                                                                                                                                                                                                                                            [34;1H~                                                                                                                                                                                                                                            [35;1H~                                                                                                                                                                                                                                            [36;1H~                                                                                                                                                                                                                                            [37;1H~                                                                                                                                                                                                                                            [38;1H~                                                                                                                                                                                                                                            [39;1H~                                                                                                                                                                                                                                            [40;1H~                                                                                                                                                                                                                                            [41;1H~                                                                                                                                                                                                                                            [42;1H~                                                                                                                                                                                                                                            [43;1H~                                                                                                                                                                                                                                            [44;1H~                                                                                                                                                                                                                                            [45;1H~                                                                                                                                                                                                                                            [46;1H~                                                                                                                                                                                                                                            [47;1H~                                                                                                                                                                                                                                            [48;1H~                                                                                                                                                                                                                                            [49;1H~                                                                                                                                                                                                                                            [50;1H~                                                                                                                                                                                                                                            [51;1H~                                                                                                                                                                                                                                            [52;1H~                                                                                                                                                                                                                                            [53;1H~                                                                                                                                                                                                                                            [54;1H~                                                                                                                                                                                                                                            [55;1H~                                                                                                                                                                                                                                            [56;1H~                                                                                                                                                                                                                                            [57;1H~                                                                                                                                                                                                                                            [58;1H~                                                                                                                                                                                                                                            [59;1H~                                                                                                                                                                                                                                            [60;1H~                                                                                                                                                                                                                                            [61;1H~                                                                                                                                                                                                                                            [62;1H~                                                                                                                                                                                                                                            [1;1H[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1HExecuting: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1H[34m^[[m]0;root@lvm:/[34m^G[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1Hdone[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1HFound initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1HFound linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1HGenerating grub configuration file ...[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[L[1;63r[1;1H[34m^[[m]0;root@lvm:/[34m^G^[[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[34m^M[?12l[?25h[?25l[1;62r[m[1;1H[9M[1;63r[54;1H[1m[34m~                                                                                                                                                                                                                                            [55;1H~                                                                                                                                                                                                                                            [56;1H~                                                                                                                                                                                                                                            [57;1H~                                                                                                                                                                                                                                            [58;1H~                                                                                                                                                                                                                                            [59;1H~                                                                                                                                                                                                                                            [60;1H~                                                                                                                                                                                                                                            [61;1H~                                                                                                                                                                                                                                            [62;1H~                                                                                                                                                                                                                                            [1;1H[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[27m[m[H[2J[1;10H=[23Ccrc=1[8Cfinobt=0, sparse=0[34m^M[m
+data     =[23Cbsize=4096   blocks=2097152, imaxpct=25[34m^M[m[3;10H=[23Csunit=0      swidth=0 blks[34m^M[m
+naming   =version 2[14Cbsize=4096   ascii-ci=0 ftype=1[34m^M[m
+log      =internal log[11Cbsize=4096   blocks=2560, version=2[34m^M[m[6;10H=[23Csectsz=512   sunit=0 blks, lazy-count=1[34m^M[m
+realtime =none[19Cextsz=4096   blocks=0, rtextents=0[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[34m^M[m
+xfsrestore: using file dump (drive_simple) strategy[34m^M[m
+xfsrestore: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: using file dump (drive_simple) strategy[34m^M[m
+xfsdump: version 3.1.7 (dump format 3.0)[34m^M[m
+xfsdump: level 0 dump of lvm:/[34m^M[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsdump: session label: ""[34m^M[m
+xfsrestore: searching media for dump[34m^M[m
+xfsdump: ino map phase 1: constructing initial dump list[34m^M[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[34m^M[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[34m^M[m
+xfsdump: ino map construction complete[34m^M[m
+xfsdump: estimated dump size: 728822592 bytes[34m^M[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[34m^M[m
+xfsdump: dumping ino map[34m^M[m
+xfsdump: dumping directories[34m^M[m
+xfsrestore: examining media file 0[34m^M[m
+xfsrestore: dump description: [34m^M[m
+xfsrestore: hostname: lvm[34m^M[m
+xfsrestore: mount point: /[34m^M[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[34m^M[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[34m^M[m
+xfsrestore: level: 0[34m^M[m
+xfsrestore: session label: ""[34m^M[m
+xfsrestore: media label: ""[34m^M[m
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[34m^M[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[34m^M[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[34m^M[m
+xfsrestore: searching media for directory dump[34m^M[m
+xfsrestore: reading directories[34m^M[m
+xfsdump: dumping non-directory files[34m^M[m
+xfsrestore: 2700 directories and 23608 entries processed[34m^M[m
+xfsrestore: directory post-processing[34m^M[m
+xfsrestore: restoring non-directory files[34m^M[m
+xfsdump: ending media file[34m^M[m
+xfsdump: media file size 705431944 bytes[34m^M[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[34m^M[m
+xfsdump: dump complete: 18 seconds elapsed[34m^M[m
+xfsdump: Dump Status: SUCCESS[34m^M[m
+xfsrestore: restore complete: 18 seconds elapsed[34m^M[m
+xfsrestore: Restore Status: SUCCESS[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# chroot /mnt/[34m^M
+^[[m]0;root@lvm:/[34m^G^[[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[34m^M[m
+Generating grub configuration file ...[34m^M[m
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[34m^M[m
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[34m^M[m
+done[34m^M
+^[[m]0;root@lvm:/[34m^G[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[34m^M[m
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[34m^M[m
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found![34m^M[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![34m^M[?12l[?25h[?25l[1;62r[m[1;1H[11L[1;63r[1;1HScript started on Mon 11 Feb 2019 11:27:57 AM UTC
+[34m^[[m]0;root@lvm:~[34m^G^[[m[?1034h[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00[34m^M[m
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y[34m^M[m
+  Logical volume "LogVol00" successfully removed[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00[34m^M[m
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y[34m^M[m
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.[34m^M[m
+  Logical volume "LogVol00" created.[34m^M
+^[[m]0;root@lvm:~[34m^G[m[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00[34m^M[m
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks[34m^M[m[11;10H=[23Csectsz=512   attr=2, projid32bit=1[34m^M
+
+[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[?12l[?25h[?25l[63;1H[m:[?12l[?25hq![?25l[63;1H[K[63;1H[?1l>[?12l[?25h[?1049l]0;root@lvm:~[root@lvm ~]# ll
+total 68
+-rw-------. 1 root root  5763 May 12  2018 anaconda-ks.cfg
+-rw-------. 1 root root  5432 May 12  2018 original-ks.cfg
+-rw-r--r--. 1 root root 53248 Feb 11 11:30 resize_root.log
+]0;root@lvm:~[root@lvm ~]# less resize_root.log 
+[?1049h[?1h=Script started on Mon 11 Feb 2019 11:27:57 AM UTC
+[7mESC[27m]0;root@lvm:~[7m^GESC[27m[?1034h[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
+  Logical volume "LogVol00" successfully removed
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.
+  Logical volume "LogVol00" created.
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2097152, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of lvm:/
+xfsdump: dump date: Mon Feb 11 11:28:38 2019
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 728822592 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: lvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/vg_root-lv_root
+xfsrestore: session time: Mon Feb 11 11:28:38 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2700 directories and 23608 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 705431944 bytes
+xfsdump: dump size (non-dir files) : 692279248 bytes
+xfsdump: dump complete: 18 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 18 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+[7mresize_root.log[27m[K[K [KESCESC[K[[[K66[K~~[K[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# chroot /mnt/
+[7mESC[27m]0;root@lvm:/[7m^GESC[27m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+[7mESC[27m]0;root@lvm:/[7m^G[27m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+:[K[K [KESCESC[K[[[K66[K~~[K[7mESC[27m]0;root@lvm:/boot[7m^G[27m[root@lvm boot]# exit
+exit
+[7mESC[27m]0;root@lvm:~[7m^G[27m[root@lvm ~]# les[7mESC[27m[[7mESC[27m[[7mESC[27m[[7mESC[27m[Kvi resize_root.log 
+[7mESC[27m[?1049h[7mESC[27m[?1h[7mESC[27m=[7mESC[27m[1;63r[7mESC[27m[?12;25h[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[27m[7mESC[27m[m[7mESC[27m[H[7mESC[27m[2J[7mESC[27m[?25l[7mESC[27m[63;1H"resize_root.log" [noeol] 74L, 4096C[7mESC[27m[1;1HScript started on Mon 11 Feb 2019 11:27:57 AM UTC
+[7mESC[27m[34m^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G^[[7mESC[27m[m[?1034h[root@lvm ~]# lvremove /dev/VolGroup00/LogVol00[7mESC[27m[34m^M[7mESC[27m[m
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y[7mESC[27m[34m^M[7mESC[27m[m
+  Logical volume "LogVol00" successfully removed[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00[7mESC[27m[34m^M[7mESC[27m[m
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y[7mESC[27m[34m^M[7mESC[27m[m
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.[7mESC[27m[34m^M[7mESC[27m[m
+  Logical volume "LogVol00" created.[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# mkfs.xfs /dev/VolGroup00/LogVol00[7mESC[27m[34m^M[7mESC[27m[m
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[11;10H=[7mESC[27m[23Csectsz=512   attr=2, projid32bit=1[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[12;10H=[7mESC[27m[23Ccrc=1[7mESC[27m[8Cfinobt=0, sparse=0[7mESC[27m[34m^M[7mESC[27m[m
+data     =[7mESC[27m[23Cbsize=4096   blocks=2097152, imaxpct=25[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[14;10H=[7mESC[27m[23Csunit=0      swidth=0 blks[7mESC[27m[34m^M[7mESC[27m[m
+naming   =version 2[7mESC[27m[14Cbsize=4096   ascii-ci=0 ftype=1[7mESC[27m[34m^M[7mESC[27m[m
+log      =internal log[7mESC[27m[11Cbsize=4096   blocks=2560, version=2[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[17;10H=[7mESC[27m[23Csectsz=512   sunit=0 blks, lazy-count=1[7mESC[27m[34m^M[7mESC[27m[m
+realtime =none[7mESC[27m[19Cextsz=4096   blocks=0, rtextents=0[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: level 0 dump of lvm:/[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 1: constructing initial dump list[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map construction complete[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: estimated dump size: 728822592 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping ino map[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: examining media file 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: dump description: [7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: hostname: lvm[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: mount point: /[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: level: 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for directory dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: reading directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: 2700 directories and 23608 entries processed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: directory post-processing[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restoring non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ending media file[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: media file size 705431944 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: Dump Status: SUCCESS[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restore complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: Restore Status: SUCCESS[7mESC[27m[34m^M[7mESC[27m[1;1H[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[27m[7mESC[27m[m[7mESC[27m[H[7mESC[27m[2J[7mESC[27m[1;1Hxfsrestore: restore complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: Restore Status: SUCCESS[7mESC[27m[34m^M
+:[K[K [KESCESC[K[[[K66[K~~[K^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# chroot /mnt/[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G^[[7mESC[27m[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[7mESC[27m[34m^M[7mESC[27m[m
+Generating grub configuration file ...[7mESC[27m[34m^M[7mESC[27m[m
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[7mESC[27m[34m^M[7mESC[27m[m
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[7mESC[27m[34m^M[7mESC[27m[m
+done[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G[7mESC[27m[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[7mESC[27m[34m^M[7mESC[27m[m
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found![7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be
+[7mESC[27m[1m[7mESC[27m[34m~                                                                                                                                                                                                                                             [7mESC[27m[16;1H~                                                                                                                                                                                                                                             [7mESC[27m[17;1H~                                                                                                                                                                                                                                             [7mESC[27m[18;1H~                                                                                                                                                                                                                                             [7mESC[27m[19;1H~                                                                                                                                                                                                                                             [7mESC[27m[20;1H~                                                                                                                                                                                                                                             [7mESC[27m[21;1H~                                                                                                                                                                                                                                             [7mESC[27m[22;1H~                                                                                                                                                                                                                                             [7mESC[27m[23;1H~                                                                                                                                                                                                                                             [7mESC[27m[24;1H~                                                                                                                                                                                                                                             [7mESC[27m[25;1H~                                                                                                                                                                                                                                             [7mESC[27m[26;1H~                                                                                                                                                                                                                                             [7mESC[27m[27;1H~                                                                                                                                                                                                                                             [7mESC[27m[28;1H~                                                                                                                                                                                                                                             [7mESC[27m[29;1H~                                                                                                                                                                                                                                             [7mESC[27m[30;1H~                                                                                                                                                                                                                                             [7mESC[27m[31;1H~                                                                                                                                                                                                                                             [7mESC[27m[32;1H~                                                                                                                                                                                                                                             [7mESC[27m[33;1H~                                                                                                                                                                                                                                             [7mESC[27m[34;1H~                                                                                                                                                                                                                                             [7mESC[27m[35;1H~                                                                                                                                                                                                                                             [7mESC[27m[36;1H~                                                                                                                                                                                                                                             [7mESC[27m[37;1H~                                                                                                                                                                                                                                             [7mESC[27m[38;1H~                                                                                                                                                                                                                                             [7mESC[27m[39;1H~                                                                                                                                                                                                                                             [7mESC[27m[40;1 H~                                                                                                                                                                                                                                             [7mESC[27m[41;1H~                                                                                                                                                                                                                                             [7mESC[27m[42;1H~                                                                                                                                                                                                                                             [7mESC[27m[43;1H~                                                                                                                                                                                                                                             [7mESC[27m[44;1H~                                                                                                                                                                                                                                             [7mESC[27m[45;1H~                                                                                                                                                                                                                                             [7mESC[27m[46;1H~                                                                                                                                                                                                                                             [7mESC[27m[47;1H~                                                                                                                                                                                                                                             [7mESC[27m[48;1H~                                                                                                                                                                                                                                             [7mESC[27m[49;1H~                                                                                                                                                                                                                                             [7mESC[27m[50;1H~                                                                                                                                                                                                                                             [7mESC[27m[51;1H~                                                                                                                                                                                                                                             [7mESC[27m[52;1H~                                                                                                                                                                                                                                             [7mESC[27m[53;1H~                                                                                                                                                                                                                                             [7mESC[27m[54;1H~                                                                                                                                                                                                                                             [7mESC[27m[55;1H~                                                                                                                                                                                                                                             [7mESC[27m[56;1H~                                                                                                                                                                                                                                             [7mESC[27m[57;1H~                                                                                                                                                                                                                                             [7mESC[27m[58;1H~                                                                                                                                                                                                                                             [7mESC[27m[59;1H~                                                                                                                                                                                                                                             [7mESC[27m[60;1H~                                                                                                                                                                                                                                             [7mESC[27m[61;1H~                                                                                                                                                                                                                                             [7mESC[27m[62;1H~                                                                                                                                                                                                                                             [7mESC[27m[1;1H[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1; :[K[K [KESCESC[K[[[K66[K~~[K62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[13M[7mESC[27m[1;63r[7mESC[27m[50;1H[7mESC[27m[1m[7mESC[27m[34m~                                                                                                                                                                                                                                             [7mESC[27m[51;1H~                                                                                                                                                                                                                                             [7mESC[27m[52;1H~                                                                                                                                                                                                                                             [7mESC[27m[53;1H~                                                                                                                                                                                                                                             [7mESC[27m[54;1H~                                                                                                                                                                                                                                             [7mESC[27m[55;1H~                                                                                                                                                                                                                                             [7mESC[27m[56;1H~                                                                                                                                                                                                                                             [7mESC[27m[57;1H~                                                                                                                                                                                                                                             [7mESC[27m[58;1H~                                                                                                                                                                                                                                             [7mESC[27m[59;1H~                                                                                                                                                                                                                                             [7mESC[27m[60;1H~                                                                                                                                                                                                                                             [7mESC[27m[61;1H~                                                                                                                                                                                                                                             [7mESC[27m[62;1H~                                                                                                                                                                                                                                             [7mESC[27m[1;1H[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[27m[7mESC[27m[m[7mESC[27m[H[7mESC[27m[2J[7mESC[27m[1;10H=[7mESC[27m[23Ccrc =1[7mESC[27m[8Cfinobt=0, sparse=0[7mESC[27m[34m^M[7mESC[27m[m
+data     =[7mESC[27m[23Cbsize=4096   blocks=2097152, imaxpct=25[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[3;10H=[7mESC[27m[23Csunit=0      swidth=0 blks[7mESC[27m[34m^M[7mESC[27m[m
+naming   =version 2[7mESC[27m[14Cbsize=4096   ascii-ci=0 ftype=1[7mESC[27m[34m^M[7mESC[27m[m
+log      =internal log[7mESC[27m[11Cbsize=4096   blocks=2560, version=2[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[6;10H=[7mESC[27m[23Csectsz=512   sunit=0 blks, lazy-count=1[7mESC[27m[34m^M[7mESC[27m[m
+realtime =none[7mESC[27m[19Cextsz=4096   blocks=0, rtextents=0[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: level 0 dump of lvm:/[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 1: constructing initial dump list[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map construction complete[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: estimated dump size: 728822592 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping ino map[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: examining media file 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: dump description: [7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: hostname: lvm[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: mount point: /[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: level: 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for directory dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: reading directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: 2700 directories and 23608 entries processed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: directory post-processing[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restoring non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ending media file[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: media file size 705431944 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: Dump Status: SUCCESS[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restore complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+:[K[K [KESCESC[K[[[K66[K~~[Kxfsrestore: Restore Status: SUCCESS[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# chroot /mnt/[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G^[[7mESC[27m[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[7mESC[27m[34m^M[7mESC[27m[m
+Generating grub configuration file ...[7mESC[27m[34m^M[7mESC[27m[m
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[7mESC[27m[34m^M[7mESC[27m[m
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[7mESC[27m[34m^M[7mESC[27m[m
+done[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G[7mESC[27m[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done[7mESC[27m[34m^M[7mESC[27m[m
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found![7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[27m[7mESC[27m[m[7mESC[27m[H[7mESC[27m[2J[7mESC[27m[1;1Hdracut module 'busybox' will not be installed, because command 'busybox' could  not be found![7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found![7mESC[27m[34m^M[7mESC[27m[m
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be
+[7mESC[27m[1m[7mESC[27m[34m~                                                                                                                                                                                                                                             [7mESC[27m[5;1H~                                                                                                                                                                                                                                             [7mESC[27m[6;1H~                                                                                                                                                                                                                                             [7mESC[27m[7;1H~                                                                                                                                                                                                                                             [7mESC[27m[8;1H~                                                                                                                                                                                                                                             [7mESC[27m[9;1H~                                                                                                                                                                                                                                             [7mESC[27m[10;1H~                                                                                                                                                                                                                                             [7mESC[27m[11;1H~                                                                                                                                                                                                                                             [7mESC[27m[12;1H~                                                                                                                                                                                                                                             [7mESC[27m[13;1H~                                                                                                                                                                                                                                             [7mESC[27m[14;1H~                                                                                                                                                                                                                                             [7mESC[27m[15;1H~                                                                                                                                                                                                                                             [7mESC[27m[16;1H~                                                                                                                                                                                                                                             [7mESC[27m[17;1H~                                                                                                                                                                                                                                             [7mESC[27m[18;1H~                                                                                                                                                                                                                                             [7mESC[27m[19;1H~                                                                                                                                                                                                                                             [7mESC[27m[20;1H~                                                                                                                                                                                                                                             [7mESC[27m[21;1H~                                                                                                                                                                                                                                             [7mESC[27m[22;1H~                                                                                                                                                                                                                                             [7mESC[27m[23;1H~                                                                                                                                                                                                                                             [7mESC[27m[24;1H~                                                                                                                                                                                                                                             [7mESC[27m[25;1H~                                                                                                                                                                                                                                             [7mESC[27m[26;1H~                                                                                                                                                                                                                                             [7mESC[27m[27;1H~                                                                                                                                                                                                                                             [7mESC[27m[28;1H~                                                                                                                                                                                                                                             [7mESC[27m[29;1H~                                                                                                                                                                                                                                             [7mESC[27m[ 30;1H~                                                                                                                                                                                                                                             [7mESC[27m[31;1H~                                                                                                                                                                                                                                             [7mESC[27m[32;1H~                                                                                                                                                                                                                                             [7mESC[27m[33;1H~                                                                                                                                                                                                                                             [7mESC[27m[34;1H~                                                                                                                                                                                                                                             [7mESC[27m[35;1H~                                                                                                                                                                                                                                             [7mESC[27m[36;1H~                                                                                                                                                                                                                                             [7mESC[27m[37;1H~                                                                                                                                                                                                                                             [7mESC[27m[38;1H~                                                                                                                                                                                                                                             [7mESC[27m[39;1H~                                                                                                                                                                                                                                             [7mESC[27m[40;1H~                                                                                                                                                                                                                                             [7mESC[27m[41;1H~                                                                                                                                                                                                                                             [7mESC[27m[42;1H~                                                                                                                                                                                                                                             [7mESC[27m[43;1H~                                                                                                                                                                                                                                             [7mESC[27m[44;1H~                                                                                                                                                                                                                                             [7mESC[27m[45;1H~                                                                                                                                                                                                                                             [7mESC[27m[46;1H~                                                                                                                                                                                                                                             [7mESC[27m[47;1H~                                                                                                                                                                                                                                             [7mESC[27m[48;1H~                                                                                                                                                                                                                                             [7mESC[27m[49;1H~                                                             :[K[K [KESCESC[K[[[K66[K~~[K                                                                                                                                                                                [7mESC[27m[50;1H~                                                                                                                                                                                                                                             [7mESC[27m[51;1H~                                                                                                                                                                                                                                             [7mESC[27m[52;1H~                                                                                                                                                                                                                                             [7mESC[27m[53;1H~                                                                                                                                                                                                                                             [7mESC[27m[54;1H~                                                                                                                                                                                                                                             [7mESC[27m[55;1H~                                                                                                                                                                                                                                             [7mESC[27m[56; 1H~                                                                                                                                                                                                                                             [7mESC[27m[57;1H~                                                                                                                                                                                                                                             [7mESC[27m[58;1H~                                                                                                                                                                                                                                             [7mESC[27m[59;1H~                                                                                                                                                                                                                                             [7mESC[27m[60;1H~                                                                                                                                                                                                                                             [7mESC[27m[61;1H~                                                                                                                                                                                                                                             [7mESC[27m[62;1H~                                                                                                                                                                                                                                             [7mESC[27m[1;1H[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1HExecuting: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force[7mESC[27m[3 4m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1H[7mESC[27m[34m^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G[7mESC[27m[m[root@lvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force;  done[7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1Hdone[7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1HFound initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img[7mESC[27m[3 4m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1HFound linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64[7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1HGenerating grub configurat ion file ...[7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r[7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[L[7mESC[27m[1;63r[7mESC[27m[1;1H[7mESC[27m[34m^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G^[[7mESC[27m[m[?1034h[root@lvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg[7mESC[27m[34m^M[7m^MESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[1;62r [7mESC[27m[m[7mESC[27m[1;1H[7mESC[27m[9M[7mESC[27m[1;63r[7mESC[27m[54;1H[7mESC[27m[1m[7mESC[27m[34m~                                                                                                                                                                                                                                             [7mESC[27m[55;1H~                                                                                                                                                                                                                                             [7mESC[27m[56;1H~                                                                                                                                                                                                                                             [7mESC[27m[57;1H~                                                                                                                                                                                                                                             [7mESC[27m[58;1H~                                                                                                                                                                                                                                             [7mESC[27m[59;1H~                                                                                                                                                                                                                                             [7mESC[27m[60;1H~                                                                                                                                                                                                                                             [7mESC[27m[61;1H~                                                                                                                                                                                                                                             [7mESC[27m[62;1H~                                                                                                                                                                                                                                             [7mESC[27m[1;1H[7mESC[27m[?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m[?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m[?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m[?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m [?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m[?12l[7mESC[27m[?25h[7m^GESC[27m[?25l[7mESC[27m[?12l[7mESC[27m[?25h[7mESC[27m[?25l[7mESC[27m[27m[7mESC[27m[m[7mESC[27m[H[7mESC[27m[2J[7mESC[27m[1;10H=[7mESC[27m[23Ccrc=1[7mESC[27m[8Cfinobt=0, sparse=0[7mESC[27m[34m^M[7mESC[27m[m
+data     =[7mESC[27m[23Cbsize=4096   blocks=2097152, imaxpct=25[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[3;10H=[7mESC[27m[23Csunit=0      swidth=0 blks[7mESC[27m[34m^M[7mESC[27m[m
+naming   =version 2[7mESC[27m[14Cbsize=4096   ascii-ci=0 ftype=1[7mESC[27m[34m^M[7mESC[27m[m
+log      =internal log[7mESC[27m[11Cbsize=4096   blocks=2560, version=2[7mESC[27m[34m^M[7mESC[27m[m[7mESC[27m[6;10H=[7mESC[27m[23Csectsz=512   sunit=0 blks, lazy-count=1[7mESC[27m[34m^M[7mESC[27m[m
+realtime =none[7mESC[27m[19Cextsz=4096   blocks=0, rtextents=0[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# mount /dev/VolGroup00/LogVol00 /mnt[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# xfsdump -J - /dev/vg_root/lv_root | xfsrestore -J - /mnt[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: using file dump (drive_simple) strategy[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: version 3.1.7 (dump format 3.0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: level 0 dump of lvm:/[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump date: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 1: constructing initial dump list[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 2: skipping (no pruning necessary)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map phase 3: skipping (only one dump stream)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ino map construction complete[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: estimated dump size: 728822592 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: creating dump session media file 0 (media 0, file 0)[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping ino map[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: examining media file 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: dump description: [7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: hostname: lvm[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: mount point: /[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: volume: /dev/mapper/vg_root-lv_root[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session time: Mon Feb 11 11:28:38 2019[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: level: 0[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session label: ""[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media label: ""[7mESC[27m[34m^M[7mESC[27m[m
+:[K[K [KESCESC[K[[[K66[K~~[Kxfsrestore: file system id: be3ef49d-0f58-4325-9204-c95c08527dfa[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: session id: 829b0232-1485-4d31-9d2a-4f63f5042f03[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: media id: 568ffcb5-6884-4062-9c50-3a8c7cbffe31[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: searching media for directory dump[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: reading directories[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dumping non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: 2700 directories and 23608 entries processed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: directory post-processing[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restoring non-directory files[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: ending media file[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: media file size 705431944 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump size (non-dir files) : 692279248 bytes[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: dump complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsdump: Dump Status: SUCCESS[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: restore complete: 18 seconds elapsed[7mESC[27m[34m^M[7mESC[27m[m
+xfsrestore: Restore Status: SUCCESS[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:~[7mESC[27m[34m^G[7mESC[27m[m[root@lvm ~]# chroot /mnt/[7mESC[27m[34m^M
+^[[7mESC[27m[m]0;root@lvm:/[7mESC[27m[34m^G^[[7mESC[27m[m
