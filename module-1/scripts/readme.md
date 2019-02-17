@@ -1,4 +1,4 @@
-##Найти IP-адрес из другого сегмента сети
+**Найти IP-адрес из другого сегмента сети**
 
 ```console
 #!/usr/bin/env bash
@@ -30,25 +30,29 @@ while getopts 'ls:ch' OPTION; do
 done
 ```
 
-##watchdog скрипт с проверкой ip
+**watchdog скрипт с проверкой ip**
 
-Например, к веб-серверу идёт обращение с IP-адреса первый октет которого начинается с 77.
+Например, к веб-серверу идёт обращение с IP-адреса первый октет которого начинается с 77. В этом случае нам необходимо отправить email со списком IP-адресов.
+
+Для удобства составим расписание, которое будет выполняться каждую минуту с защитой от удаления журнала с IP-адресами.
+
+```console
+* * * * * /usr/bin/flock -w 0 /var/run/sendlog.lock /opt/sendlog.sh
+```
+(flock утилита для лока файла)
+
+*Скрипт отправки лога на почту*
 
 ```console
 #!/usr/bin/env bash
-awk '/^77/ {print $1} ' $ourlog | uniq | sort -n
-```
 
-Нам по каким-то причинам не нужно их учитывать
+export ourlog=<path_to>/access.log
+export alertlog=<path>/alert.log
 
-*Доделать алгоритм*
-
-Если обращение идёт с 77, то удалять их из журнала и отправить (письмо с вложением некого журнала?) сообщение, иначе ждать некоторое время. Возможно привязать к частоте выполнения крон задачи?.
-
-if ( awk '/^77/ {print $1} ' $ourlog | uniq | sort -n ) 2> /dev/null; #Условие должно быть истинным и только 1 IP-адрес?
-    then
-        trap 'sed -i "/^77/"' INT TERM EXIT KILL
-            mail -s "Журнал очищен" root@localhost
-        trap - INT TERM EXIT
+if grep -q '^77' $ourlog; then
+        awk '/^77/ {print $1}' $ourlog | sort | uniq -c > $alertlog
+        mail -a $alertlog -s "Warning!" admin@localhost < /dev/null
 else
-    sleep 10s
+        exit 1
+fi
+```
