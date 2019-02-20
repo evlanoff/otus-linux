@@ -13,7 +13,7 @@ export ourlog='./access.log'
 while getopts 'ls:ch' OPTION; do
     case "$OPTION" in
         l)
-            awk '/[0-9]*\.[0-9]*\.[0-9]\.[0-9]*/ {print $1} ' $ourlog | sort -n
+            awk '/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*/ {print $1} ' $ourlog | sort -n | uniq
         ;;
         s)
             awk '/[0-9]*\.[0-9]*\.'"$OPTARG"'\.[0-9]*/ {print $1} ' $ourlog | sort -n | uniq
