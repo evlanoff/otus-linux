@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
           box.vm.network "private_network", ip: boxconfig[:ip_addr]
 	
 	# Uploading needed files to build a RPM package on VM
-	box.vm.provision "file", source: "fifs.spec", destination: "/home/vagrant/fifs.spec"
+	box.vm.provision "file", source: "fifs.spec", destination: "~/fifs.spec"
 #	box.vm.provision "file", source: "provision_rpm.sh", destination: "~/provision_rpm.sh"
 
  	  box.vm.provision "shell", inline: <<-SHELL
@@ -27,7 +27,6 @@ Vagrant.configure("2") do |config|
               cp ~vagrant/.ssh/auth* ~root/.ssh
               yum install -y rpmdevtools rpm-build
 	SHELL
-	config.vm.provision :shell, path: "provision_rpm.sh"
 
       end
   end

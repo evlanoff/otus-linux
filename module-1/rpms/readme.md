@@ -72,8 +72,6 @@ rm -rf $RPM_BUILD_ROOT
 /opt/fifs/access.log
 %doc
 
-
-
 %changelog
 ```
 
@@ -94,3 +92,70 @@ rpm -ivh rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm
 ```console
 rpm -e fifs
 ```
+
+# Настройка локального репозитория
+
+Установка необходимых зависимостей для развёртывания репозитория
+
+```console
+yum install -y nginx createrepo w3m
+```
+
+Подготовка пакетов для размещения в репозитории
+
+```console
+mkdir -p /usr/share/nginx/html/repo
+cp fifs-1.0.noarch.rpm /usr/share/nginx/html/repo/
+curl -o /usr/share/nginx/html/repo/nano-2.3.1-10.el7.src.rpm http://vault.centos.org/7.5.1804/os/Source/SPackages/nano-2.3.1-10.el7.src.rpm
+createrepo /usr/share/nginx/html/repo/
+```
+
+Правим дефолтный конфиг веб-сервера
+
+```console
+vi /etc/nginx/nginx.conf
+
+server {
+...
+#Указываем путь до папки, в которой будут лежать пакеты
+	root /usr/share/nginx/html/repo;
+...
+location / {
+	autoindex on;
+}
+...
+}
+```
+
+Добавить в /etc/yum.repos.d
+
+```console
+cat >> /etc/yum.repos.d/otus-homework.repo << EOF
+[otus-homework]
+name=otus-homework
+baseurl=http://localhost/
+gpgcheck=0
+enabled=1
+EOF
+```
+Проверка, что репозиторий подключен
+
+```console
+yum repolist enabled | grep otus-homework
+yum list | grep otus-homework
+```
+
+Запуск веб-сервера
+
+```console
+systemctl enable nginx
+systemctl start nginx
+systemctl status nginx
+```
+Заходим на ресурс
+
+```console
+w3m -N http://localhost/
+```
+
+Если всё правильно, в браузере будет список пакетов.
