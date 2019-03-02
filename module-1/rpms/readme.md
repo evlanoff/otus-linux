@@ -3,8 +3,7 @@
 Устанавливаем необходимые зависимости. (Сделать provisioning в Vagrantfile)
 
 ```console
-yum install -y epel-release
-yum install -y vim rpmdevtools rpm-build
+yum install epel-release rpmdevtools rpm-build -y
 ```
 
 Скачиваем в директорию файлы, которые будут упакованы в пакет.
@@ -31,12 +30,6 @@ tar czvf rpmbuild/SOURCES/fifs-1.0.tar.gz fifs-1.0/
 
 ```console
 rpmdev-newspec fifs
-```
-
-Редактируем вновь созданный spec-файл
-
-```console
-vim fifs.spec
 ```
 
 Пример получившегося spec-файла
@@ -68,8 +61,8 @@ install access.log $RPM_BUILD_ROOT/opt/fifs/access.log
 rm -rf $RPM_BUILD_ROOT
 
 %files
-/opt/fifs/fifs.sh
-/opt/fifs/access.log
+%attr(0755,vagrant,vagrant) /opt/fifs/fifs.sh
+%attr(0644,vagrant,vagrant) /opt/fifs/access.log
 %doc
 
 %changelog
@@ -112,22 +105,12 @@ createrepo /usr/share/nginx/html/repo/
 
 Правим дефолтный конфиг веб-сервера
 
-```console
-vi /etc/nginx/nginx.conf
 
-server {
-...
+```console
 #Указываем путь до папки, в которой будут лежать пакеты
-	root /usr/share/nginx/html/repo;
-...
-location / {
-	autoindex on;
-}
-...
-}
-```
-
-```console
+sed -i '42d' /etc/nginx/nginx.conf
+sed -i -e '42i\\     root     /usr/share/nginx/html/repo;' /etc/nginx/nginx.conf
+#Автоиндексация каталога
 sed -i -e '48i\\          autoindex on;' nginx.conf
 ```
 
