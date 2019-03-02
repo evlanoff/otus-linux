@@ -1,28 +1,27 @@
 # Создание RPM пакета
 
-Устанавливаем необходимые зависимости. (Сделать provisioning в Vagrantfile)
+Устанавливаем необходимые зависимости.
 
 ```console
 yum install epel-release rpmdevtools rpm-build -y
 ```
 
-Скачиваем в каталог fifs-1.0 файлы, которые будут упакованы в пакет.
+Скачиваем в каталог fifs-1.0 файлы, которые будут упакованы в пакет. Файлы взяты из одного из предыдущих ДЗ.
 
 ```console
 mkdir fifs-1.0 && cd fifs-1.0
-curl -O https://raw.githubusercontent.com/evlanoff/otus-linux/master/module-1/scripts/find_ip_from_subnet.sh
+curl -o fifs.sh https://raw.githubusercontent.com/evlanoff/otus-linux/master/module-1/scripts/find_ip_from_subnet.sh
 curl -O https://raw.githubusercontent.com/evlanoff/otus-linux/master/module-1/scripts/access.log
-mv find_ip_from_subnet.sh fifs.sh
 ```
 
 Патчим путь до журнала, чтобы fifs.sh видел его
 
 ```console
-sed -i '3d' fifs-1.0/fifs.sh
-sed -i -e '3i\\ export ourlog='/opt/fifs/access.log'' fifs-1.0/fifs.sh
+sed -i '3d' fifs.sh
+sed -i -e '3i\\ export ourlog='/opt/fifs/access.log'' fifs.sh
 ```
 
-Создаём структуру каталогов для будущего пакета
+Создаём структуру каталогов для будущего пакета в корне ~/
 
 ```console
 rpmdev-setuptree
@@ -89,7 +88,7 @@ rm -rf /opt/fifs
 rpmbuild -bb rpmbuild/SPECS/fifs.spec
 ```
 
-Если всё настроено правильно, то в директории rpmbuild/RPMS/noarch будет лежать rpm-пакет, который можно установить командой
+Если всё настроено правильно, то в директории rpmbuild/RPMS/noarch будет лежать rpm-пакет, который можно установить.
 
 ```console
 rpm -ivh rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm
