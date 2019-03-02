@@ -106,7 +106,7 @@ yum install nginx createrepo w3m -y
 ```console
 mkdir -p /usr/share/nginx/html/repo
 cp fifs-1.0.noarch.rpm /usr/share/nginx/html/repo/
-curl -o /usr/share/nginx/html/repo/nano-2.3.1-10.el7.src.rpm http://vault.centos.org/7.5.1804/os/Source/SPackages/nano-2.3.1-10.el7.src.rpm
+curl -o /usr/share/nginx/html/repo/nano-2.3.1-10.el7.x86_64.rpm http://mirror.centos.org/centos/7/os/x86_64/Packages/nano-2.3.1-10.el7.x86_64.rpm
 createrepo /usr/share/nginx/html/repo/
 ```
 
