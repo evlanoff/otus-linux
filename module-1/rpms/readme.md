@@ -22,13 +22,6 @@ sed -i '3d' fifs-1.0/fifs.sh
 sed -i -e '3i\\ export ourlog='/opt/fifs/access.log'' fifs-1.0/fifs.sh
 ```
 
-Добавляем в $PATH путь и создаём символичкую ссылку
-
-```console
-echo -e "export PATH=$PATH:/opt/fifs/" >> ~/.profile
-ln -s /opt/fifs/fifs.sh /usr/bin/fifs
-```
-
 Создаём структуру каталогов для будущего пакета
 
 ```console
@@ -93,6 +86,13 @@ rpmbuild -bb rpmbuild/SPECS/fifs.spec
 
 ```console
 rpm -ivh rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm
+```
+
+Добавляем в $PATH путь и создаём символичкую ссылку
+
+```console
+echo -e "export PATH=$PATH:/opt/fifs" >> ~/.profile
+ln -s /opt/fifs/fifs.sh /usr/bin/fifs
 ```
 
 Удалить пакет можно командой
