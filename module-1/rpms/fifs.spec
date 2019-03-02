@@ -1,15 +1,15 @@
 Name:           fifs
 Version:        1.0
 Release:        1%{?dist}
-Summary:        Test RPM
+Summary:        Тестовый RPM-пакет для выполнения ДЗ
 
 License:        MIT
-URL:            https://github.com/evlanoff/otus-linux
+URL:            https://github.com/evlanoff/otus-linux/module-1/scripts
 Source0:        fifs-%{version}.tar.gz
 BuildArch:      noarch
 
 %description
-Homework
+Примитивный анализатор журнала
 
 %prep
 %setup -q
