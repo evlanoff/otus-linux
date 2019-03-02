@@ -24,8 +24,8 @@ install access.log $RPM_BUILD_ROOT/opt/fifs/access.log
 rm -rf $RPM_BUILD_ROOT
 
 %files
-/opt/fifs/fifs.sh
-/opt/fifs/access.log
+%attr(0755,vagrant,vagrant) /opt/fifs/fifs.sh
+%attr(0644,vagrant,vagrant) /opt/fifs/access.log
 %doc
 
 %changelog
