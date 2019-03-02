@@ -128,7 +128,7 @@ location / {
 ```
 
 ```console
-sed -i -e '49i\\          autoindex on;' nginx.conf
+sed -i -e '48i\\          autoindex on;' nginx.conf
 ```
 
 
