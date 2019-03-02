@@ -1,4 +1,4 @@
-**Создание RPM пакета**
+# Создание RPM пакета
 
 Устанавливаем необходимые зависимости. (Сделать provisioning в Vagrantfile)
 
@@ -98,7 +98,7 @@ rpm -e fifs
 Установка необходимых зависимостей для развёртывания репозитория
 
 ```console
-yum install -y nginx createrepo w3m
+yum install nginx createrepo w3m -y
 ```
 
 Подготовка пакетов для размещения в репозитории
@@ -126,6 +126,11 @@ location / {
 ...
 }
 ```
+
+```console
+sed -i -e '49i\\          autoindex on;' nginx.conf
+```
+
 
 Добавить в /etc/yum.repos.d
 
