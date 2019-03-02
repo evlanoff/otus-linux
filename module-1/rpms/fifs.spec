@@ -21,8 +21,11 @@ install fifs.sh $RPM_BUILD_ROOT/opt/fifs/fifs.sh
 install access.log $RPM_BUILD_ROOT/opt/fifs/access.log
 
 %post
-echo -e "export PATH=$PATH:/opt/fifs" >> ~/.profile
+echo -e "export PATH=$PATH:/opt/fifs" >> /etc/.profile
 ln -s /opt/fifs/fifs.sh /usr/bin/fifs
+
+%postun
+rm -rf /opt/fifs
 
 %clean
 rm -rf $RPM_BUILD_ROOT
