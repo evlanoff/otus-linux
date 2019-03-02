@@ -6,13 +6,27 @@
 yum install epel-release rpmdevtools rpm-build -y
 ```
 
-Скачиваем в директорию файлы, которые будут упакованы в пакет.
+Скачиваем в каталог fifs-1.0 файлы, которые будут упакованы в пакет.
 
 ```console
-mkdir fifs-1.0
+mkdir fifs-1.0 && cd fifs-1.0
 curl -O https://raw.githubusercontent.com/evlanoff/otus-linux/master/module-1/scripts/find_ip_from_subnet.sh
 curl -O https://raw.githubusercontent.com/evlanoff/otus-linux/master/module-1/scripts/access.log
 mv find_ip_from_subnet.sh fifs.sh
+```
+
+Патчим путь до журнала, чтобы fifs.sh видел его
+
+```console
+sed -i '3d' fifs-1.0/fifs.sh
+sed -i -e '3i\\ export ourlog='/opt/fifs/access.log'' fifs-1.0/fifs.sh
+```
+
+Добавляем в $PATH путь и создаём символичкую ссылку
+
+```console
+echo -e "export PATH=$PATH:/opt/fifs/" >> ~/.profile
+ln -s /opt/fifs/fifs.sh /usr/bin/fifs
 ```
 
 Создаём структуру каталогов для будущего пакета
@@ -20,13 +34,14 @@ mv find_ip_from_subnet.sh fifs.sh
 ```console
 rpmdev-setuptree
 ```
+
 Создаём архив с нашими файлами
 
 ```console
 tar czvf rpmbuild/SOURCES/fifs-1.0.tar.gz fifs-1.0/
 ```
 
-Для генерации болванки spec-файла переходим в папку ~/rpmbuild/SPECS, где созаём spec-файл.
+Для генерации болванки spec-файла переходим в каталог ~/rpmbuild/SPECS.
 
 ```console
 rpmdev-newspec fifs
@@ -41,7 +56,7 @@ Release:        1%{?dist}
 Summary:        Test RPM
 
 License:        MIT
-URL:            https://github.com/evlanoff/otus-linux
+URL:            https://github.com/evlanoff/otus-linux/tree/master/module-1/rpms
 Source0:        fifs-%{version}.tar.gz
 BuildArch:      noarch
 
@@ -91,7 +106,7 @@ rpm -e fifs
 Установка необходимых зависимостей для развёртывания репозитория
 
 ```console
-yum install nginx createrepo w3m -y
+yum install epel-release nginx createrepo -y
 ```
 
 Подготовка пакетов для размещения в репозитории
