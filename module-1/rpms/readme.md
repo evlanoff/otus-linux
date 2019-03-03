@@ -134,6 +134,13 @@ sed -i -e '42i\\     root     /usr/share/nginx/html/repo;' /etc/nginx/nginx.conf
 sed -i -e '48i\\          autoindex on;' nginx.conf
 ```
 
+Запуск веб-сервера
+
+```console
+systemctl enable nginx
+systemctl start nginx
+```
+
 
 Добавить в /etc/yum.repos.d
 
@@ -146,6 +153,7 @@ gpgcheck=0
 enabled=1
 EOF
 ```
+
 Проверка, что репозиторий подключен
 
 ```console
@@ -153,17 +161,9 @@ yum repolist enabled | grep otus-homework
 yum list | grep otus-homework
 ```
 
-Запуск веб-сервера
-
-```console
-systemctl enable nginx
-systemctl start nginx
-systemctl status nginx
-```
-Заходим на ресурс
+Проверяем доступность репозитория
 
 ```console
 w3m -N http://localhost/
+curl -a http://localhost/
 ```
-
-Если всё правильно, в браузере будет список пакетов.
