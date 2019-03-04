@@ -36,7 +36,7 @@ if [ -f "/home/vagrant/rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm" ]; then
         echo "File: /home/vagrant/rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm not exists"
 fi
 
-#cp /home/vagrant/rpmbuild/RPMS/noarch/fifs-1.0-1.e17.noarch.rpm /usr/share/nginx/html/repo/
+cp /home/vagrant/rpmbuild/RPMS/noarch/fifs-1.0-1.el7.noarch.rpm /usr/share/nginx/html/repo/
 curl -o /usr/share/nginx/html/repo/nano-2.3.1-10.el7.x86_64.rpm http://mirror.centos.org/centos/7/os/x86_64/Packages/nano-2.3.1-10.el7.x86_64.rpm
 
 #Правим nginx.conf для нашего репозитория
