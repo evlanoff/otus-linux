@@ -1,0 +1,2 @@
+WORD="user=root"
+LOG=/var/log/secure

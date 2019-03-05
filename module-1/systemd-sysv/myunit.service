@@ -1,0 +1,12 @@
+[Unit]
+Description=Homework service
+
+[Service]
+Type=notify
+EnvironmentFile=/etc/sysconfig/myownunit
+ExecStart=/opt/logger.sh $WORD $LOG
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

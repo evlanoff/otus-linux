@@ -10,7 +10,6 @@ chmod 0664 /etc/systemd/system/myownunit.service
 
 [Unit]
 Description=Homework service
-After=network.target
 
 [Service]
 Type=notify
@@ -31,3 +30,5 @@ chmod a+x my_daemon.sh
 
 #!/usr/bin/env bash
 ```
+
+Разложить файлы по папкам, сделать provision для вагранта.

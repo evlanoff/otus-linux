@@ -1,0 +1,9 @@
+[Unit]
+Description=Trying to run my unit each 30 seconds
+
+[Timer]
+OnUnitActiveSec=30
+Unit=myunit.service
+
+[Install]
+WantedBy=multi-user.target
