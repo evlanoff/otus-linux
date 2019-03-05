@@ -1,7 +1,8 @@
 # Создание юнита
 
-#Кладём наш сервис в 
+Кладём наш сервис в 
 
+```console
 touch /etc/systemd/system/myownunit.service
 chmod 0664 /etc/systemd/system/myownunit.service
 
@@ -9,7 +10,7 @@ chmod 0664 /etc/systemd/system/myownunit.service
 
 [Unit]
 Description=Homework service
-# After=network.target
+After=network.target
 
 [Service]
 Type=notify
@@ -18,7 +19,7 @@ User=vagrant
 EnvironmentFile=/etc/sysconfig/myownunit
 ExecStart=/home/vagrant/my_daemon -D $OPTIONS
 Restart=on-failure
-# Other Restart options: or always, on-abort, etc
+Other Restart options: or always, on-abort, etc
 
 [Install]
 WantedBy=multi-user.target
@@ -29,3 +30,4 @@ my_daemon.sh
 chmod a+x my_daemon.sh
 
 #!/usr/bin/env bash
+```
