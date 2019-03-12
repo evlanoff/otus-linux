@@ -1,34 +1,24 @@
 # Создание юнита
 
-Кладём наш сервис в 
+myunit.service - основной сервис
+
+myownunit.timer - таймер для сервиса
+
+myownlog - файл с переменными
+
+logger.sh - скрипт, который запускает сервис
+
+
+**Запуск сервиса и таймера**
 
 ```console
-touch /etc/systemd/system/myownunit.service
-chmod 0664 /etc/systemd/system/myownunit.service
-
-/etc/sysconfig/myownunit
-
-[Unit]
-Description=Homework service
-
-[Service]
-Type=notify
-User=vagrant
-#WorkingDirectory=/home/vagrant
-EnvironmentFile=/etc/sysconfig/myownunit
-ExecStart=/home/vagrant/my_daemon -D $OPTIONS
-Restart=on-failure
-Other Restart options: or always, on-abort, etc
-
-[Install]
-WantedBy=multi-user.target
-
-
-my_daemon.sh
-
-chmod a+x my_daemon.sh
-
-#!/usr/bin/env bash
+sudo systemctl enable myunit.service myownunit.timer
+sudo systemctl start myunit.service myownunit.timer
 ```
 
-Разложить файлы по папкам, сделать provision для вагранта.
+Просмотр работы скрипта
+
+```console
+sudo tail -f /var/log/messages
+```
+

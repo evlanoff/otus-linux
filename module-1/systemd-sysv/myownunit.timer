@@ -3,6 +3,8 @@ Description=Trying to run my unit each 30 seconds
 
 [Timer]
 OnUnitActiveSec=30
+AccuracySec=1us
+OnBootSec=1
 Unit=myunit.service
 
 [Install]

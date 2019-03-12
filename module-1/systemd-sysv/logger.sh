@@ -2,11 +2,11 @@
 
 WORD=$1
 LOG=$2
+MESSAGE=`grep -i $WORD $LOG | awk ' {print "The root user last call: ", $3, "\n" } '`
 
-
-IF grep -i $WORD $LOG &> /dev/null
+if grep -i $WORD $LOG &> /dev/null
 then
-	logger "`grep -i $WORD $LOG | awk ' {print \"The root user last call: \", $3 }`"
+	logger "$MESSAGE"
 else
 	exit 0;
 fi

@@ -3,8 +3,10 @@ Description=Homework service
 
 [Service]
 Type=notify
-EnvironmentFile=/etc/sysconfig/myownunit
+EnvironmentFile=/etc/sysconfig/myownlog
 ExecStart=/opt/logger.sh $WORD $LOG
+Restart=on-failure
+StartLimitBurst=0
 Restart=on-failure
 
 [Install]
