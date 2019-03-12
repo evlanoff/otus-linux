@@ -41,17 +41,22 @@ yum install epel-release -y && yum install spawn-fcgi php php-cli mod_fcgid http
 
 **Расскомментировать строки с переменными в /etc/sysconfig/spawn-fcgi**
 
+```console
 /etc/sysconfig/spawn-fcgi 
 
 sed -i '/SOCKET=/s/^#//' /etc/sysconfig/spawn-fcgi
 sed -i '/OPTIONS=/s/^#//' /etc/sysconfig/spawn-fcgi
+```
 
 **Удаляем параметр отвечающий за PID-файл**
 
+```console
 sed -i 's/-P \/var\/run\/spawn-fcgi.pid //g' spawn-fcgi
+```
 
 **Юнит-файл**
 
+```console
 /etc/systemd/system/spawn-fcgi.service
 
 [Unit]
@@ -67,3 +72,4 @@ KillMode=process
 
 [Install]
 WantedBy=multi-user.target
+```
