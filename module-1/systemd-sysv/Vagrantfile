@@ -8,6 +8,39 @@ MACHINES = {
   	},
 }
 
+$systemd_bootstrap = <<-SCRIPT
+	cp /vagrant/myunit.service /etc/systemd/system/
+	cp /vagrant/myownunit.timer /etc/systemd/system/
+	cp /vagrant/myownlog /etc/sysconfig/
+	cp /vagrant/logger.sh /opt/
+	chmod 0755 /opt/logger.sh
+	systemctl enable myunit.service myownunit.timer
+	systemctl start myunit.service myownunit.timer
+	systemctl status myunit.service
+SCRIPT
+
+$spawn_fcgi_bootstrap = <<-SCRIPT
+	yum install epel-release -y && yum install spawn-fcgi php php-cli mod_fcgid httpd -y
+	sed -i '/SOCKET=/s/^#//' /etc/sysconfig/spawn-fcgi
+	sed -i '/OPTIONS=/s/^#//' /etc/sysconfig/spawn-fcgi
+	sed -i 's:-P \/var\/run\/spawn-fcgi.pid ::g' /etc/sysconfig/spawn-fcgi
+
+	cp /vagrant/spawn-fcgi.service /etc/systemd/system/spawn-fcgi.service
+
+	systemctl enable spawn-fcgi.service
+	systemctl start spawn-fcgi.service
+	systemctl status spawn-fcgi.service
+
+SCRIPT
+
+$httpd_bootstrap = <<-SCRIPT
+	yum install epel-release -y && yum install httpd -y
+	cp /vagrant/httpd.service /etc/systemd/system/
+	cp /vagrant/httpd-first.conf /etc/sysconfig/
+	cp /vagrant/httpd-second.conf /etc/sysconfig/
+	
+SCRIPT
+
 Vagrant.configure("2") do |config|
 
   MACHINES.each do |boxname, boxconfig|
@@ -25,7 +58,13 @@ Vagrant.configure("2") do |config|
           SHELL
 
 # Провижн для сервиса systemd
-#	  box.vm.provision "shell", path: "bootstrap.sh"
+#	  box.vm.provision "shell", inline: $systemd_bootstrap
+
+# Провижн для сервиса spawn-fcgi
+#	  box.vm.provision "shell", inline: $spawn_fcgi_bootstrap
+
+# Провижн для apache httpd
+	  box.vm.provision "shell", inline: $httpd_bootstrap
 
       end
   end
