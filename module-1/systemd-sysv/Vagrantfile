@@ -36,8 +36,8 @@ SCRIPT
 $httpd_bootstrap = <<-SCRIPT
 	yum install epel-release -y && yum install httpd -y
 	cp /vagrant/httpd.service /etc/systemd/system/
-	cp /vagrant/httpd-first.conf /etc/sysconfig/
-	cp /vagrant/httpd-second.conf /etc/sysconfig/
+	cp /vagrant/httpd-first /etc/sysconfig/
+	cp /vagrant/httpd-second /etc/sysconfig/
 	
 SCRIPT
 
