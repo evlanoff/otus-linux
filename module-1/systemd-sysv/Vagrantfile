@@ -35,10 +35,20 @@ SCRIPT
 
 $httpd_bootstrap = <<-SCRIPT
 	yum install epel-release -y && yum install httpd -y
-	cp /vagrant/httpd.service /etc/systemd/system/
+	cp /vagrant/httpd@.service /etc/systemd/system/
 	cp /vagrant/httpd-first /etc/sysconfig/
 	cp /vagrant/httpd-second /etc/sysconfig/
 	
+	cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/first.conf
+	cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/second.conf
+
+	sed -i '32iPidFile /var/run/httpd-second.pid' /etc/httpd/conf/second.conf
+	sed -i -e 's/Listen 80/Listen 8080/' /etc/httpd/conf/second.conf
+
+	systemctl start httpd@first.service
+	systemctl start httpd@second.service
+
+	ss -tnulp | grep httpd
 SCRIPT
 
 Vagrant.configure("2") do |config|
@@ -64,7 +74,7 @@ Vagrant.configure("2") do |config|
 #	  box.vm.provision "shell", inline: $spawn_fcgi_bootstrap
 
 # Провижн для apache httpd
-	  box.vm.provision "shell", inline: $httpd_bootstrap
+#	  box.vm.provision "shell", inline: $httpd_bootstrap
 
       end
   end

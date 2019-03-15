@@ -1,6 +1,11 @@
-# Создание юнита
+================================================================
+=                                                              =
+= **Внутри Vagrantfile раскоментировать строки для провижина** =
+=                                                              =
+================================================================
 
-В Vagrantfile раскомментировать строку 61 для проверки работоспособности
+
+# Создание юнита
 
 myunit.service - основной сервис
 
@@ -78,26 +83,23 @@ KillMode=process
 WantedBy=multi-user.target
 ```
 
-В Vagrantfile раскомментировать строку 67 для проверки работоспособности
+# Запуск httpd с несколькими инстансами
 
-(доделать, разобраться с httpd.conf файлами first, second. C PID-файлами разобраться, EnvironmentFile=/etc/sysconfig/httpd-%I это не работает уточнить)
-
-cp /vagrant/httpd.service /etc/systemd/system/
+```console
+cp /vagrant/httpd@.service /etc/systemd/system/
 cp /vagrant/httpd-first.conf /etc/sysconfig/
 cp /vagrant/httpd-second.conf /etc/sysconfig/
 
-Внутри поправить папки с html
+yum install epel-release -y && yum install httpd -y
+
 cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/first.conf
 cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/second.conf
 
+sed -i '32iPidFile /var/run/httpd-second.pid' /etc/httpd/conf/second.conf
+sed -i -e 's/Listen 80/Listen 8080/' /etc/httpd/conf/second.conf
 
-mkdir -p /var/www/html/{first,second}
+systemctl start httpd@first.service
+systemctl start httpd@second.service
 
-cat >> /var/www/html/first/index.html <<-EOF
-<h1>First</h1>
-    EOF
-    
-cat >> /var/www/html/second/index.html <<-EOF
-<h1>Second</h1>
-    EOF
-
+ss -tnulp | grep httpd
+```
