@@ -80,9 +80,7 @@ WantedBy=multi-user.target
 
 # Запуск httpd с несколькими инстансами
 
-В названии сервиса должна присутствовать @. Подробнее читать
-
-[Тут](https://www.freedesktop.org/software/systemd/man/systemd.unit.html) и [тут](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
+В названии сервиса должна присутствовать @. Подробнее читать [тут](https://www.freedesktop.org/software/systemd/man/systemd.unit.html) и [тут](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
 
 ```console
 cp /vagrant/httpd@.service /etc/systemd/system/
