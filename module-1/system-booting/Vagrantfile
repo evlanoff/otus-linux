@@ -1,0 +1,69 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :otuslinux => {
+        :box_name => "cdaf/CentOSLVM",
+        :ip_addr => '192.168.11.101',
+  	},
+}
+
+
+$bootstrap = <<-SCRIPT
+    OldVGname=centos_centoslvm
+    NewVGname=OtusRoot
+    
+    echo 'Old VG name'
+    
+    vgs
+    
+    echo '\n\n\t\tRenaming VG'
+    
+    vgrename -v $OldVGname $NewVGname
+    
+    echo -e '\n\n\t\tDone!'
+    
+    vgs
+    
+    sed -i "s/$OldVGname/$NewVGname/g" /etc/fstab
+    sed -i "s/$OldVGname/$NewVGname/g" /etc/default/grub
+    sed -i "s/lv=$OldVGname/lv=$NewVGname/g" /boot/grub2/grub.cfg
+    sed -i "s/$OldVGname-/$NewVGname-/g" /boot/grub2/grub.cfg
+    
+    mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+    
+    echo "Please reboot OS and try to log in"
+
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+
+#config.vm.provider "virtualbox" do |vb|
+#    vb.customize ["modifyvm", :id, "--usb", "off"]
+#    vb.customize ["modifyvm", :id, "--usbehci", "off"]
+#end
+
+
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+	
+
+     	  box.vm.provision "shell", inline: <<-SHELL
+	          mkdir -p ~root/.ssh
+              cp ~vagrant/.ssh/auth* ~root/.ssh
+          SHELL
+
+# Провижн для переименования VG
+#	  box.vm.provision "shell", inline: $bootstrap
+
+      end
+  end
+end
+
