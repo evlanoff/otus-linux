@@ -9,7 +9,7 @@ MACHINES = {
 }
 
 
-$bootstrap = <<-SCRIPT
+$bootstrap_VG = <<-SCRIPT
     OldVGname=centos_centoslvm
     NewVGname=OtusRoot
     
@@ -34,6 +34,21 @@ $bootstrap = <<-SCRIPT
     
     echo "Please reboot OS and try to log in"
 
+SCRIPT
+
+$bootstrap_dracut = <<-SCRIPT
+
+    mkdir -p /usr/lib/dracut/modules.d/01test
+    curl -o /usr/lib/dracut/modules.d/01test/module-setup.sh https://gist.githubusercontent.com/lalbrekht/e51b2580b47bb5a150bd1a002f16ae85/raw/80060b7b300e193c187bbcda4d8fdf0e1c066af9/gistfile1.txt
+    chmod 0755 /usr/lib/dracut/modules.d/01etst/module-setup.sh
+    curl -o /usr/lib/dracut/modules.d/01test/test.sh https://gist.githubusercontent.com/lalbrekht/ac45d7a6c6856baea348e64fac43faf0/raw/69598efd5c603df310097b52019dc979e2cb342d/gistfile1.txt
+    chmod 0755 /usr/lib/dracut/modules.d/test/test.sh
+    mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+    dracut -f -v
+    lsinitrd -m /boot/initramfs-$(uname -r).img | grep test
+    sed -i "s/rghb quiet//g" /boot/grub2/grub.cfg
+    echo "Please reboot OS"
+    
 SCRIPT
 
 Vagrant.configure("2") do |config|
@@ -61,7 +76,10 @@ Vagrant.configure("2") do |config|
           SHELL
 
 # Провижн для переименования VG
-#	  box.vm.provision "shell", inline: $bootstrap
+#	  box.vm.provision "shell", inline: $bootstrap_VG
+
+# Провижн для загрузки модуля через dracut
+#	  box.vm.provision "shell", inline: $bootstrap_dracut
 
       end
   end
