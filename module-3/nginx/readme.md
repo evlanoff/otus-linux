@@ -56,7 +56,7 @@ curl -v --cookie "otus=1" http://192.168.11.100/otus
     master: > Accept: */*
     master: > Cookie: otus=1
     master: >
-    master: Hello, OTUS!				<<<<-----------------------------------
+    master: Hello, OTUS!	<<<<-----------------------------------
     master: < HTTP/1.1 200 OK
     master: < Server: nginx/1.12.2
     master: < Date: Fri, 17 May 2019 18:41:57 GMT
